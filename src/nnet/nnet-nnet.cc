@@ -553,6 +553,38 @@ void Nnet::SetTrainOptions(const NnetTrainOptions& opts) {
   }
 }
 
+
+  //visualization functions
+
+  void Nnet::vFeedforward(const CuMatrixBase<BaseFloat> &in, CuMatrix<BaseFloat> *out) {
+
+    KALDI_ASSERT(NULL != out);
+
+    if (NumComponents() == 0) {
+      out->Resize(in.NumRows(), in.NumCols());
+      out->CopyFromMat(in);
+      return;
+    }
+
+    if (NumComponents() == 1) {
+      components_[0]->Propagate(in, out);
+      return;
+    }
+
+    // we need at least 2 input buffers
+    KALDI_ASSERT(propagate_buf_.size() >= 2);
+
+    // propagate by using exactly 2 auxiliary buffers
+    int32 L=0;
+    components_[L]->Propagate(in, &propagate_buf_[L]);
+    for(L++; L<=NumComponents()-2; L++) {
+      components_[L]->Propagate(propagate_buf_[L-1], &propagate_buf_[L]);
+    }
+    components_[L]->Propagate(propagate_buf_[L-1], out);
+    components_[L]->Propagate(propagate_buf_[L-1], &propagate_buf_[L]);
+    
+}
+
  
 } // namespace nnet1
 } // namespace kaldi

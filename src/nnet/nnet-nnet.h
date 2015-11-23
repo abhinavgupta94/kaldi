@@ -48,6 +48,8 @@ class Nnet {
   void Backpropagate(const CuMatrixBase<BaseFloat> &out_diff, CuMatrix<BaseFloat> *in_diff);
   /// Perform forward pass through the network, don't keep buffers (use it when not training)
   void Feedforward(const CuMatrixBase<BaseFloat> &in, CuMatrix<BaseFloat> *out);
+  //functions for visualization
+  void vFeedforward(const CuMatrixBase<BaseFloat> &in, CuMatrix<BaseFloat> *out);
 
   /// Dimensionality on network input (input feature dim.)
   int32 InputDim() const;
@@ -58,6 +60,7 @@ class Nnet {
   /// e.g. the nonlinearity and the linear part count as separate components,
   /// so the number of components will be more than the number of layers.
   int32 NumComponents() const { return components_.size(); }
+
 
   const Component& GetComponent(int32 c) const;
   Component& GetComponent(int32 c);
